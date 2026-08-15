@@ -1,0 +1,20 @@
+{
+  "total": 11500,
+  "allocations": {
+    "pairing": 163,
+    "user_profile": 267,
+    "economy": 2088,
+    "gambling": 527,
+    "heist": 397,
+    "games": 1048,
+    "downloads": 918,
+    "stickers": 527,
+    "group": 1048,
+    "utility": 788,
+    "ai": 1048,
+    "settings": 787,
+    "owner": 1048,
+    "fun": 527,
+    "special": 319
+  }
+}
