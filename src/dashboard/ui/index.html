@@ -1,0 +1,54 @@
+const SSE_HTML = `<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>EMZY AI Dashboard App</title>
+  <link rel="stylesheet" href="/dashboard/app/styles.css">
+</head>
+<body>
+  <div id="app">
+    <h1>EMZY AI Dashboard</h1>
+    <div class="panel">
+      <label>Owner token (x-owner-token):</label>
+      <input id="token" placeholder="Enter owner token" />
+      <button id="saveToken">Save (local)</button>
+    </div>
+
+    <div class="panel">
+      <h2>Settings</h2>
+      <label>Anti-link</label><input type="checkbox" id="antiLink" />
+      <label>Save view-once</label><input type="checkbox" id="viewOnce" />
+      <label>Warn limit</label><input id="warnLimit" type="number" value="6" />
+      <button id="applySettings">Apply & Broadcast</button>
+      <pre id="settingsResult"></pre>
+    </div>
+
+    <div class="panel">
+      <h2>Pairings</h2>
+      <button id="refreshPairings">Refresh</button>
+      <pre id="pairings">(none)</pre>
+    </div>
+
+    <div class="panel">
+      <h2>Training Examples</h2>
+      <button id="refreshTraining">Refresh</button>
+      <pre id="training">(none)</pre>
+    </div>
+
+    <div class="panel">
+      <h2>View-once Files</h2>
+      <button id="refreshViewOnce">Refresh</button>
+      <pre id="viewonce">(none)</pre>
+    </div>
+
+    <div class="panel">
+      <h2>Broadcast Stream</h2>
+      <button id="connectStream">Connect</button>
+      <pre id="streamLog">(not connected)</pre>
+    </div>
+  </div>
+  <script src="/dashboard/app/app.js"></script>
+</body>
+</html>`;
+
+export default SSE_HTML;

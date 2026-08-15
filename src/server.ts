@@ -1,11 +1,14 @@
-import dotenv from 'dotenv';
 import express from 'express';
+import dotenv from 'dotenv';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import { initDb } from './db';
 import { handleWebhook } from './webhook/meta';
 import { dashboardRouter } from './dashboard';
 import { logger } from './utils/logger';
+
+// Load command modules
+import './commands';
 
 dotenv.config();
 const app = express();
@@ -27,8 +30,11 @@ async function start() {
   });
 
   app.get('/health', (req, res) => {
-    res.json({ status: 'ok', name: 'EMZY AI', version: '0.1.0' });
+    res.json({ status: 'ok', name: 'EMZY AI', version: '0.2.0' });
   });
+
+  // Serve dashboard UI static files
+  app.use('/dashboard/app', express.static('src/dashboard/ui'));
 
   app.use('/dashboard', dashboardRouter);
 
