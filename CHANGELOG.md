@@ -1,1 +1,1 @@
-Updated webhook to send outbound messages via Meta Graph API and added economy command handlers. Added Postgres detection and adapter.
+Updated to add S3 storage support, retries for media downloads, rate limiting, webhook verify token handling, and additional games. Also added Postgres migration SQL and express-rate-limit.
