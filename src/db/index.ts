@@ -4,16 +4,26 @@ import Database from 'better-sqlite3';
 import { CONFIG } from '../config';
 import { logger } from '../utils/logger';
 
-let db: Database.Database;
+let sqliteDb: Database.Database | null = null;
 
 export async function initDb() {
   const dbPath = path.join(process.cwd(), 'data');
   if (!fs.existsSync(dbPath)) fs.mkdirSync(dbPath, { recursive: true });
+
+  // If DATABASE_URL looks like postgres, initialize Postgres instead
+  if (CONFIG.DATABASE_URL && CONFIG.DATABASE_URL.startsWith('postgres')) {
+    // Lazy: create tables using node-postgres
+    const { initPostgres } = await import('./postgres');
+    await initPostgres(CONFIG.DATABASE_URL);
+    logger.info('Using Postgres database');
+    return;
+  }
+
   const sqlitePath = path.join(dbPath, 'database.sqlite');
-  db = new Database(sqlitePath);
+  sqliteDb = new Database(sqlitePath);
 
   // Create tables if not exist
-  db.exec(`
+  sqliteDb.exec(`
     CREATE TABLE IF NOT EXISTS pairings (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       whatsapp_id TEXT UNIQUE,
@@ -29,14 +39,15 @@ export async function initDb() {
       bank INTEGER DEFAULT 0,
       xp INTEGER DEFAULT 0,
       level INTEGER DEFAULT 1,
+      last_daily INTEGER DEFAULT 0,
       created_at INTEGER
     );
   `);
 
-  logger.info('Database initialized at ' + sqlitePath);
+  logger.info('SQLite database initialized at ' + sqlitePath);
 }
 
 export function getDb() {
-  if (!db) throw new Error('DB not initialized');
-  return db;
+  if (!sqliteDb) throw new Error('SQLite DB not initialized or running Postgres');
+  return sqliteDb;
 }

@@ -1,27 +1,7 @@
-import fs from 'fs';
-import path from 'path';
-
-type CommandHandler = (from: string, args: string[]) => Promise<string> | string;
-
-const commands: Record<string, CommandHandler> = {};
-
-export function registerCommand(name: string, handler: CommandHandler) {
-  commands[name] = handler;
-}
-
-export async function runCommand(from: string, text: string) {
-  if (!text.startsWith('.')) return null;
-  const parts = text.trim().split(' ');
-  const cmd = parts[0].toLowerCase();
-  const args = parts.slice(1);
-  const handler = commands[cmd];
-  if (!handler) return 'Unknown command';
-  const res = await handler(from, args);
-  return res;
-}
-
-// Register built-in commands dynamically
 import { createPairCode, verifyPairCode, unpair as dbUnpair } from '../db/sqlite';
+import { registerCommand } from './loader';
+import * as economy from '../economy';
+
 registerCommand('.pair', async (from) => {
   const code = Math.floor(100000 + Math.random() * 900000).toString();
   const expires = Date.now() + 5 * 60 * 1000;
@@ -37,4 +17,14 @@ registerCommand('.verify', async (from, args) => {
 registerCommand('.unpair', async (from) => {
   dbUnpair(from);
   return '✅ Unpaired.';
+});
+
+// Economy commands
+registerCommand('.bal', async (from) => {
+  const bal = await economy.getBalance(from);
+  return `💰 Balance: $${bal}`;
+});
+registerCommand('.daily', async (from) => {
+  const res = await economy.claimDaily(from);
+  return res.message;
 });
