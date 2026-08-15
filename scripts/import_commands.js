@@ -15,11 +15,11 @@ async function importToSqlite() {
   const Database = require('better-sqlite3');
   const dbPath = path.join(process.cwd(), 'data', 'database.sqlite');
   const db = new Database(dbPath);
-  db.prepare(`CREATE TABLE IF NOT EXISTS commands (id INTEGER PRIMARY KEY AUTOINCREMENT, trigger TEXT UNIQUE, category TEXT, response TEXT, enabled INTEGER DEFAULT 1, metadata TEXT, created_at INTEGER)`).run();
+  db.prepare(`CREATE TABLE IF NOT EXISTS commands (id INTEGER PRIMARY KEY AUTOINCREMENT, trigger TEXT UNIQUE, category TEXT, response TEXT, enabled INTEGER DEFAULT 0, metadata TEXT, created_at INTEGER)`).run();
   const insert = db.prepare('INSERT OR REPLACE INTO commands (trigger, category, response, enabled, metadata, created_at) VALUES (?, ?, ?, ?, ?, ?)');
   const txn = db.transaction((rows) => {
     for (const r of rows) {
-      insert.run(r.trigger, r.category, r.response, 1, JSON.stringify(r.metadata || {}), Date.now());
+      insert.run(r.trigger, r.category, r.response, 0, JSON.stringify(r.metadata || {}), Date.now());
     }
   });
   txn(commands);
@@ -30,7 +30,7 @@ async function importToPostgres() {
   const { Client } = require('pg');
   const client = new Client({ connectionString: DATABASE_URL });
   await client.connect();
-  await client.query(`CREATE TABLE IF NOT EXISTS commands (id SERIAL PRIMARY KEY, trigger TEXT UNIQUE, category TEXT, response TEXT, enabled BOOLEAN DEFAULT TRUE, metadata JSONB, created_at BIGINT)`);
+  await client.query(`CREATE TABLE IF NOT EXISTS commands (id SERIAL PRIMARY KEY, trigger TEXT UNIQUE, category TEXT, response TEXT, enabled BOOLEAN DEFAULT FALSE, metadata JSONB, created_at BIGINT)`);
   // Insert in batches
   const batchSize = 500;
   for (let i = 0; i < commands.length; i += batchSize) {
@@ -40,7 +40,7 @@ async function importToPostgres() {
     let idx = 1;
     for (const b of batch) {
       values.push(`($${idx++}, $${idx++}, $${idx++}, $${idx++}, $${idx++})`);
-      params.push(b.trigger, b.category, b.response, true, JSON.stringify(b.metadata || {}));
+      params.push(b.trigger, b.category, b.response, false, JSON.stringify(b.metadata || {}));
     }
     const q = `INSERT INTO commands (trigger, category, response, enabled, metadata) VALUES ${values.join(', ')} ON CONFLICT (trigger) DO UPDATE SET response = EXCLUDED.response, category = EXCLUDED.category, metadata = EXCLUDED.metadata`;
     await client.query(q, params);

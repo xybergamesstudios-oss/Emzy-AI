@@ -2,12 +2,12 @@
 
 This file lists the environment variables and steps to deploy EMZY AI to Render.
 
-Required env vars:
+Required env vars (do NOT commit secrets to the repo):
 - META_WHATSAPP_TOKEN
 - META_PHONE_NUMBER_ID
 - GROQ_API_KEY
-- OWNER_WHATSAPP (format: whatsapp:+254...) 
-- OWNER_TOKEN (set to the generated token below or supply your own)
+- OWNER_WHATSAPP (format: whatsapp:+<countrycode><number>)
+- OWNER_TOKEN (set to a secure value in Render secrets)
 - DATABASE_URL (postgres://...) - recommended for production
 - PUBLIC_URL (https://your-service.onrender.com)
 - SECRET_KEY
@@ -18,9 +18,6 @@ Optional for durable media storage:
 - AWS_ACCESS_KEY_ID
 - AWS_SECRET_ACCESS_KEY
 - S3_REGION
-
-Generated OWNER_TOKEN (copy this value and set OWNER_TOKEN in Render):
-OWNER_TOKEN=b3f9a7e2-4d1c-4e2b-9f1a-3c5b7d8e9f0a
 
 Deployment steps (Render):
 1. Connect repo xybergamesstudios-oss/Emzy-AI and use branch emzy-ai/initial.

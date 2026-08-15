@@ -14,10 +14,11 @@ export function getDynamicCommand(trigger: string) {
 
 export function insertCommandsBulk(commands: Array<{ trigger: string; category: string; response: string; metadata?: any }>) {
   const db = getDb();
-  const insert = db.prepare('INSERT INTO commands (trigger, category, response, metadata, created_at) VALUES (?, ?, ?, ?, ?) ON CONFLICT (trigger) DO UPDATE SET response = EXCLUDED.response, category = EXCLUDED.category, metadata = EXCLUDED.metadata');
+  const insert = db.prepare('INSERT INTO commands (trigger, category, response, enabled, metadata, created_at) VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT (trigger) DO UPDATE SET response = EXCLUDED.response, category = EXCLUDED.category, metadata = EXCLUDED.metadata');
   const txn = db.transaction((rows: any[]) => {
     for (const r of rows) {
-      insert.run(r.trigger, r.category, r.response, JSON.stringify(r.metadata || {}), Date.now());
+      // Insert disabled by default so admin can review and enable per-category
+      insert.run(r.trigger, r.category, r.response, 0, JSON.stringify(r.metadata || {}), Date.now());
     }
   });
   txn(commands);

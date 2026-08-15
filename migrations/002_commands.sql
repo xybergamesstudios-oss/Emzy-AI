@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS commands (
   trigger TEXT UNIQUE NOT NULL,
   category TEXT,
   response TEXT,
-  enabled BOOLEAN DEFAULT TRUE,
+  enabled BOOLEAN DEFAULT FALSE,
   metadata JSONB,
   created_at BIGINT
 );
