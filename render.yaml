@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: emzy-ai
+    env: node
+    plan: free
+    buildCommand: npm ci && npm run build
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+    postgres:
+      - name: emzy_ai_db
