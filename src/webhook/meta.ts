@@ -1,9 +1,11 @@
+// MODIFY: add dynamic command fallback into webhook handler
 import { Request, Response } from 'express';
 import { askAI } from '../ai';
 import { logger } from '../utils/logger';
 import { runCommand } from '../commands/loader';
 import { sendText } from '../utils/metaSender';
 import { handleViewOnceMessage } from '../downloads/viewonce';
+import { getDynamicCommand } from '../db/commands';
 
 // Simplified Meta webhook handler with verification token and rate limiting
 export async function handleWebhook(req: Request, res: Response) {
@@ -48,6 +50,13 @@ export async function handleWebhook(req: Request, res: Response) {
       const reply = await runCommand(from, text);
       if (reply) {
         await sendText(from, reply.toString());
+        return res.sendStatus(200);
+      }
+      // If no registered command, fallback to dynamic commands DB
+      const cmd = text.split(/\s+/)[0];
+      const dyn = getDynamicCommand(cmd);
+      if (dyn) {
+        await sendText(from, dyn.response);
         return res.sendStatus(200);
       }
     } catch (err) {
