@@ -1,6 +1,4 @@
-# Migrations for Postgres
-
--- 001_init.sql
+-- 001_init.sql (updated)
 CREATE TABLE IF NOT EXISTS pairings (
   id SERIAL PRIMARY KEY,
   whatsapp_id TEXT UNIQUE,
@@ -38,5 +36,31 @@ CREATE TABLE IF NOT EXISTS trivia_sessions (
   question_index INTEGER,
   player_id TEXT,
   score INTEGER,
+  created_at BIGINT
+);
+
+CREATE TABLE IF NOT EXISTS groups (
+  id SERIAL PRIMARY KEY,
+  group_id TEXT UNIQUE,
+  name TEXT,
+  anti_link BOOLEAN DEFAULT TRUE,
+  anti_status BOOLEAN DEFAULT TRUE,
+  warn_limit INTEGER DEFAULT 6,
+  created_at BIGINT
+);
+
+CREATE TABLE IF NOT EXISTS warnings (
+  id SERIAL PRIMARY KEY,
+  whatsapp_id TEXT,
+  group_id TEXT,
+  count INTEGER DEFAULT 0,
+  last_warn_at BIGINT
+);
+
+CREATE TABLE IF NOT EXISTS training_examples (
+  id SERIAL PRIMARY KEY,
+  source_whatsapp TEXT,
+  input_text TEXT,
+  response_text TEXT,
   created_at BIGINT
 );
