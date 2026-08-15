@@ -1,0 +1,51 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Emzy-AI Dashboard</title>
+    <link rel="stylesheet" href="/dashboard/static/dashboard.css">
+  </head>
+  <body>
+    <div id="app">
+      <header>
+        <h1>Emzy-AI Admin Dashboard</h1>
+        <div class="controls">
+          <input id="token" placeholder="Owner token" />
+          <button id="statsBtn">Stats</button>
+          <button id="snapshotBtn">Create Snapshot</button>
+          <button id="runSamplesBtn">Run Samples</button>
+          <select id="categoryFilter"><option value="">All categories</option></select>
+          <input id="search" placeholder="Search trigger or response" />
+          <button id="searchBtn">Search</button>
+        </div>
+      </header>
+
+      <main>
+        <section id="stats"></section>
+        <section id="commands">
+          <table id="commandsTable">
+            <thead><tr><th>Trigger</th><th>Category</th><th>Enabled</th><th>Actions</th></tr></thead>
+            <tbody></tbody>
+          </table>
+          <div class="pagination">
+            <button id="prev">Prev</button>
+            <span id="pageInfo">Page 1</span>
+            <button id="next">Next</button>
+          </div>
+        </section>
+      </main>
+
+      <div id="previewModal" class="modal hidden">
+        <div class="modal-content">
+          <button id="closePreview">Close</button>
+          <h3 id="previewTrigger"></h3>
+          <pre id="previewResponse"></pre>
+          <button id="toggleEnable">Toggle Enabled</button>
+        </div>
+      </div>
+    </div>
+
+    <script src="/dashboard/static/ui.js"></script>
+  </body>
+</html>
