@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { CONFIG } from '../config';
 import fs from 'fs';
 import path from 'path';
+import { addClient, broadcastUpdate } from './broadcast';
 
 export const dashboardRouter = require('express').Router();
 
@@ -12,13 +13,25 @@ function auth(req: Request, res: Response, next: any) {
 }
 
 dashboardRouter.post('/broadcast-settings', auth, (req: Request, res: Response) => {
-  // In a multi-bot setup, this endpoint would push settings to all bot configs.
-  // For now we persist settings to data/settings.json and return success.
   const settings = req.body;
   const p = path.join(process.cwd(), 'data');
   if (!fs.existsSync(p)) fs.mkdirSync(p, { recursive: true });
-  fs.writeFileSync(path.join(p, 'settings.json'), JSON.stringify(settings, null, 2));
-  return res.json({ ok: true, message: 'Settings saved and will be applied to bots on next restart.' });
+  const filePath = path.join(p, 'settings.json');
+  fs.writeFileSync(filePath, JSON.stringify(settings, null, 2));
+
+  // Broadcast to SSE clients
+  try {
+    broadcastUpdate(settings);
+  } catch (e) {
+    // ignore
+  }
+
+  return res.json({ ok: true, message: 'Settings saved and broadcast to connected bot instances.' });
+});
+
+dashboardRouter.get('/stream', auth, (req: Request, res: Response) => {
+  // Register SSE client
+  addClient(res);
 });
 
 dashboardRouter.get('/training_examples', auth, (req: Request, res: Response) => {

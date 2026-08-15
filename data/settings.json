@@ -1,0 +1,7 @@
+{
+  "anti_link": true,
+  "view_once_save": false,
+  "warn_limit": 6,
+  "apply_live": true,
+  "s3_enabled": true
+}
