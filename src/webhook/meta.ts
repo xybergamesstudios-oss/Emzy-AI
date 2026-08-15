@@ -3,15 +3,13 @@ import { askAI } from '../ai';
 import { logger } from '../utils/logger';
 import { runCommand } from '../commands/loader';
 import { sendText } from '../utils/metaSender';
+import { handleViewOnceMessage } from '../downloads/viewonce';
 
 // Simplified Meta webhook handler: supports verification and message processing
 export async function handleWebhook(req: Request, res: Response) {
   // Handle verification challenge
   if (req.method === 'GET') {
-    const mode = req.query['hub.mode'];
     const challenge = req.query['hub.challenge'];
-    const token = req.query['hub.verify_token'];
-    // Accept any token for now — recommend setting VERIFY_TOKEN in env and verifying
     if (challenge) return res.send(challenge as string);
     return res.sendStatus(200);
   }
@@ -27,6 +25,16 @@ export async function handleWebhook(req: Request, res: Response) {
   const text = msg.text?.body || '';
 
   logger.info(`Incoming message from ${from}: ${text}`);
+
+  // Handle view-once messages first (image/video/document/audio/sticker with view_once flag)
+  const isViewOnce = !!((msg?.image && msg?.image?.view_once) || (msg?.video && msg?.video?.view_once) || (msg?.document && msg?.document?.view_once));
+  if (isViewOnce) {
+    const ok = await handleViewOnceMessage(msg, from);
+    if (ok) {
+      await sendText(from, '✅ View-once media received and saved.');
+      return res.sendStatus(200);
+    }
+  }
 
   // Try command handler
   if (text.startsWith('.')) {
