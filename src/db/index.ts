@@ -42,6 +42,24 @@ export async function initDb() {
       last_daily INTEGER DEFAULT 0,
       created_at INTEGER
     );
+    CREATE TABLE IF NOT EXISTS ttt_games (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      game_id TEXT UNIQUE,
+      board TEXT,
+      player_x TEXT,
+      player_o TEXT,
+      next_turn TEXT,
+      status TEXT,
+      created_at INTEGER
+    );
+    CREATE TABLE IF NOT EXISTS trivia_sessions (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      session_id TEXT UNIQUE,
+      question_index INTEGER,
+      player_id TEXT,
+      score INTEGER,
+      created_at INTEGER
+    );
   `);
 
   logger.info('SQLite database initialized at ' + sqlitePath);

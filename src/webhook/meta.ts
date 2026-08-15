@@ -1,7 +1,6 @@
 import { Request, Response } from 'express';
 import { askAI } from '../ai';
 import { logger } from '../utils/logger';
-import * as db from '../db/sqlite';
 import { runCommand } from '../commands/loader';
 import { sendText } from '../utils/metaSender';
 
@@ -40,7 +39,7 @@ export async function handleWebhook(req: Request, res: Response) {
 
   // Non-command messages: auto AI reply in DM or when bot is mentioned in groups
   // Determine if this is a group message
-  const isGroup = !!msg?.context?.group_id || !!msg?.group_id;
+  const isGroup = !!msg?.context?.group_id || !!msg?.group_id || !!msg?.metadata?.display_phone_number; // fallback
   if (!isGroup) {
     // Direct message: use AI auto-reply
     const answer = await askAI(text || 'Hello');
@@ -48,8 +47,8 @@ export async function handleWebhook(req: Request, res: Response) {
     return res.sendStatus(200);
   }
 
-  // Group message: only reply if mentioned (simple check: body contains bot id or @)
-  const botMentioned = text.includes('EMZY AI') || text.includes('@emzy');
+  // Group message: only reply if mentioned (simple check: body contains bot name)
+  const botMentioned = text.includes('EMZY AI') || text.toLowerCase().includes('emzy');
   if (botMentioned) {
     const answer = await askAI(text);
     await sendText(from, answer);

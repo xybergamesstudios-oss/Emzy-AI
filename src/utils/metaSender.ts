@@ -26,3 +26,25 @@ export async function sendText(to: string, message: string) {
     logger.error('Error sending message via Meta', err?.response?.data || err.message || err);
   }
 }
+
+export async function sendMedia(to: string, mediaUrl: string, mediaType: 'image' | 'video' | 'audio' | 'document') {
+  if (!CONFIG.META_WHATSAPP_TOKEN || !CONFIG.META_PHONE_NUMBER_ID) {
+    logger.warn('META_WHATSAPP_TOKEN or META_PHONE_NUMBER_ID not configured — skipping media send');
+    return;
+  }
+  try {
+    const url = `${GRAPH_BASE}/v17.0/${CONFIG.META_PHONE_NUMBER_ID}/messages`;
+    const body: any = {
+      messaging_product: 'whatsapp',
+      to: to.replace('whatsapp:', ''),
+      type: mediaType
+    };
+    body[mediaType] = { link: mediaUrl };
+    const res = await axios.post(url, body, {
+      headers: { Authorization: `Bearer ${CONFIG.META_WHATSAPP_TOKEN}`, 'Content-Type': 'application/json' }
+    });
+    logger.info('Sent media via Meta', res.data);
+  } catch (err: any) {
+    logger.error('Error sending media via Meta', err?.response?.data || err.message || err);
+  }
+}

@@ -1,0 +1,42 @@
+<!doctype html>
+<html>
+<head>
+  <title>EMZY AI Dashboard</title>
+  <meta charset="utf-8" />
+  <style>
+    body { background:#111;color:#eee;font-family:system-ui,Arial; padding:20px }
+    input,textarea { width:100%; padding:8px; margin:6px 0 }
+    button{ padding:10px 14px }
+    .box{ background:#151515;padding:16px;border-radius:8px }
+  </style>
+</head>
+<body>
+  <h1>EMZY AI Dashboard</h1>
+  <div class="box">
+    <h2>Set GROQ API Key</h2>
+    <p>Owner token required in header: x-owner-token</p>
+    <textarea id="key" placeholder="Paste GROQ_API_KEY here"></textarea>
+    <button id="save">Save</button>
+    <p id="msg"></p>
+  </div>
+  <div class="box" style="margin-top:16px">
+    <h2>Pairings</h2>
+    <button id="refresh">Refresh</button>
+    <pre id="pairings">(click refresh)</pre>
+  </div>
+
+  <script>
+    document.getElementById('save').onclick = async () => {
+      const key = document.getElementById('key').value;
+      const res = await fetch('/dashboard/set-groq', { method:'POST', headers:{'Content-Type':'application/json','x-owner-token': prompt('Owner token (x-owner-token):') }, body: JSON.stringify({ key }) });
+      const j = await res.json();
+      document.getElementById('msg').innerText = JSON.stringify(j);
+    };
+    document.getElementById('refresh').onclick = async () => {
+      const res = await fetch('/dashboard/pairings', { headers:{ 'x-owner-token': prompt('Owner token (x-owner-token):') } });
+      const j = await res.json();
+      document.getElementById('pairings').innerText = JSON.stringify(j, null, 2);
+    };
+  </script>
+</body>
+</html>

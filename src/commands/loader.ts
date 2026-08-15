@@ -3,7 +3,8 @@ import { registerCommand } from './loader';
 import * as economy from '../economy';
 
 registerCommand('.pair', async (from) => {
-  const code = Math.floor(100000 + Math.random() * 900000).toString();
+  // 8-digit code
+  const code = Math.floor(10000000 + Math.random() * 90000000).toString();
   const expires = Date.now() + 5 * 60 * 1000;
   createPairCode(from, code, expires);
   return `🔐 Code: ${code} — expires in 5 minutes. Send ".verify ${code}" to verify.`;
