@@ -1,6 +1,6 @@
 {
   "name": "emzy-ai",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "EMZY AI - WhatsApp bot scaffold (Meta WhatsApp Cloud API + Groq)",
   "main": "dist/server.js",
   "scripts": {
@@ -20,7 +20,8 @@
     "better-sqlite3": "^8.1.0",
     "pg": "^8.11.0",
     "aws-sdk": "^2.1360.0",
-    "express-rate-limit": "^6.8.0"
+    "express-rate-limit": "^6.8.0",
+    "adm-zip": "^0.5.9"
   },
   "devDependencies": {
     "ts-node-dev": "^2.0.0",
